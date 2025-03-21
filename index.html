@@ -108,7 +108,7 @@
 </footer>
 
 <script>
-    // 直接读取 GitHub 上的 information.xlsx 文件
+    // 读取 test.xlsx 文件
     fetch('test.xlsx')
         .then(response => response.arrayBuffer())
         .then(data => {
@@ -126,29 +126,35 @@
                     const newRow = tableBody.insertRow();
                     
                     // 根据列的顺序读取并赋值
-                    const productImage = row[0] ? `<img src="./picture/${sheetName}/${row[0]}.png" alt="Product Image" style="width: 50px;">` : ''; // 产品图片
-                    const model = row[1] || '';        // 型号
-                    const specification = row[2] || ''; // 规格描述
-                    const chineseDescription = row[3] || ''; // 中文描述
-                    const wholesalePriceRMB = row[4] || ''; // 批发价格（人民币）
-                    const wholesalePriceUSD = row[5] || ''; // 批发价格（美元）
-                    const englishDescription = row[6] || ''; // 英文描述
+                    const productImage = row[0] ? `<img src="picture/${sheetName}/${row[0]}.png" alt="Product Image" style="width: 50px;" onerror="this.onerror=null;this.src='default-image.png';">` : ''; 
+                    const model = row[1] || '';        
+                    const specification = row[2] || ''; 
+                    const chineseDescription = row[3] || ''; 
+                    const wholesalePriceRMB = row[4] || ''; 
+                    const wholesalePriceUSD = row[5] || ''; 
+                    const englishDescription = row[6] || ''; 
 
                     // 插入每个产品的表格数据
                     const cells = [
-                        { content: productImage },
-                        { content: model },
-                        { content: specification },
-                        { content: chineseDescription },
-                        { content: wholesalePriceRMB },
-                        { content: wholesalePriceUSD },
-                        { content: englishDescription }
+                        { content: productImage },  // 插入图片
+                        { content: model },         // 插入型号
+                        { content: specification }, // 插入规格
+                        { content: chineseDescription }, // 插入中文描述
+                        { content: wholesalePriceRMB }, // 插入批发价格（人民币）
+                        { content: wholesalePriceUSD }, // 插入批发价格（美元）
+                        { content: englishDescription } // 插入英文描述
                     ];
 
                     // 添加每个单元格
                     cells.forEach(cellData => {
                         const cell = newRow.insertCell();
-                        cell.innerHTML = cellData.content;
+                        if (cellData.content.includes('<img')) {
+                            // 如果是图片HTML内容
+                            cell.innerHTML = cellData.content;
+                        } else {
+                            // 否则是文本内容
+                            cell.innerText = cellData.content;
+                        }
                     });
                 });
             });
