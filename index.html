@@ -126,7 +126,7 @@
                     const newRow = tableBody.insertRow();
                     
                     // 根据列的顺序读取并赋值
-                    const productImage = row[0] ? `<img src="picture/${sheetName}/${row[0]}.png" alt="Product Image" style="width: 50px;" onerror="this.onerror=null;this.src='default-image.png';">` : ''; 
+                    const productImage = row[0] ? `<img src="picture/sheet1/${row[0]}.png" alt="Product Image" style="width: 50px;" onerror="this.onerror=null;this.src='default-image.png';">` : ''; 
                     const model = row[1] || '';        
                     const specification = row[2] || ''; 
                     const chineseDescription = row[3] || ''; 
