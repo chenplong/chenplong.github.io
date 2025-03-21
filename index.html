@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content=" 广州卡志贸易有限公司 - 提供最新的电子产品">
-    <title> 广州卡志贸易有限公司商城</title>
+    <meta name="description" content="广州卡志贸易有限公司 - 提供最新的电子产品">
+    <title>广州卡志贸易有限公司商城</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -104,39 +104,39 @@
 </section>
 
 <footer>
-    <p>© 2025  广州卡志贸易有限公司 版权所有</p>
+    <p>© 2025 广州卡志贸易有限公司 版权所有</p>
 </footer>
 
 <script>
     // 直接读取 GitHub 上的 information.xlsx 文件
-    fetch('information.xlsx')
+    fetch('test.xlsx')
         .then(response => response.arrayBuffer())
         .then(data => {
             const workbook = XLSX.read(data, { type: 'array' });
             const tableBody = document.getElementById('productsTable').getElementsByTagName('tbody')[0];
-            tableBody.innerHTML = ''; // Clear existing table data
+            tableBody.innerHTML = ''; // 清空现有数据
 
-            // Loop through each sheet in the Excel file
+            // 遍历 Excel 文件的所有 sheet 表
             workbook.SheetNames.forEach(sheetName => {
                 const sheet = workbook.Sheets[sheetName];
                 const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-                // Skip the header row (row[0]) and process product rows
+                // 跳过第一行（标题行），然后处理每个产品
                 rows.slice(1).forEach(row => {
                     const newRow = tableBody.insertRow();
                     
-                    // Read and assign values according to column order
-                    const productImage = row[0] || ''; // Product View (image URL)
-                    const model = row[1] || '';        // Model
-                    const specification = row[2] || ''; // Specification
-                    const chineseDescription = row[3] || ''; // Chinese Description
-                    const wholesalePriceRMB = row[4] || ''; // Wholesale Price (RMB)
-                    const wholesalePriceUSD = row[5] || ''; // Wholesale Price (USD)
-                    const englishDescription = row[6] || ''; // English Description
+                    // 根据列的顺序读取并赋值
+                    const productImage = row[0] ? `<img src="./picture/${sheetName}/${row[0]}.png" alt="Product Image" style="width: 50px;">` : ''; // 产品图片
+                    const model = row[1] || '';        // 型号
+                    const specification = row[2] || ''; // 规格描述
+                    const chineseDescription = row[3] || ''; // 中文描述
+                    const wholesalePriceRMB = row[4] || ''; // 批发价格（人民币）
+                    const wholesalePriceUSD = row[5] || ''; // 批发价格（美元）
+                    const englishDescription = row[6] || ''; // 英文描述
 
-                    // Insert product details into the table
+                    // 插入每个产品的表格数据
                     const cells = [
-                        { content: `<img src="${productImage}" alt="Product Image" style="width: 50px;">` }, // Image column
+                        { content: productImage },
                         { content: model },
                         { content: specification },
                         { content: chineseDescription },
@@ -145,7 +145,7 @@
                         { content: englishDescription }
                     ];
 
-                    // Add each cell to the new row
+                    // 添加每个单元格
                     cells.forEach(cellData => {
                         const cell = newRow.insertCell();
                         cell.innerHTML = cellData.content;
@@ -154,7 +154,7 @@
             });
         })
         .catch(error => {
-            console.error('Error reading Excel file:', error);
+            console.error('读取 Excel 文件时出错:', error);
         });
 </script>
 
