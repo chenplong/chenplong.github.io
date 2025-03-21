@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kazhi Store - 商品展示</title>
+    <!-- 引入Bootstrap样式 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .company-info img {
+            max-width: 100px;
+            margin-right: 20px;
+        }
+        .table-container {
+            margin-top: 20px;
+        }
+        .pagination {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 公司信息 -->
+        <div class="company-info d-flex align-items-center my-4">
+            <img src="company-logo.png" alt="公司图标" class="img-fluid">
+            <div>
+                <h2>Kazhi Store</h2>
+                <p>负责人: 张三</p>
+                <p>电话: +86 123-4567-8901</p>
+                <img src="wechat-qr.png" alt="微信二维码" class="img-fluid" style="max-width: 100px;">
+            </div>
+        </div>
+
+        <!-- 商品表格 -->
+        <div class="table-container">
+            <h3>商品信息</h3>
+            <ul class="nav nav-tabs" id="sheetTabs"></ul>
+            <div class="tab-content" id="sheetContent"></div>
+        </div>
+    </div>
+
+    <!-- 引入Bootstrap和SheetJS -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        // 读取Excel文件并解析
+        async function loadExcel() {
+            const response = await fetch('information.xlsx');
+            const arrayBuffer = await response.arrayBuffer();
+            const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+
+            const sheetTabs = document.getElementById('sheetTabs');
+            const sheetContent = document.getElementById('sheetContent');
+
+            // 遍历所有Sheet
+            workbook.SheetNames.forEach((sheetName, index) => {
+                const sheet = workbook.Sheets[sheetName];
+                const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+                // 创建分页标签
+                const tabItem = document.createElement('li');
+                tabItem.className = 'nav-item';
+                tabItem.innerHTML = `
+                    <a class="nav-link ${index === 0 ? 'active' : ''}" data-bs-toggle="tab" href="#${sheetName}">
+                        ${sheetName}
+                    </a>
+                `;
+                sheetTabs.appendChild(tabItem);
+
+                // 创建分页内容
+                const tabPane = document.createElement('div');
+                tabPane.id = sheetName;
+                tabPane.className = `tab-pane fade ${index === 0 ? 'show active' : ''}`;
+                tabPane.innerHTML = `
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>图片</th>
+                                <th>Model</th>
+                                <th>Specification Description</th>
+                                <th>中文描述</th>
+                                <th>Wholesale Price (RMB)</th>
+                                <th>Wholesale Price (USD)</th>
+                                <th>Product English Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.slice(1).map(row => `
+                                <tr>
+                                    <td><img src="${row[0]}" alt="商品图片" class="img-fluid" style="max-width: 100px;"></td>
+                                    <td>${row[1]}</td>
+                                    <td>${row[2]}</td>
+                                    <td>${row[3]}</td>
+                                    <td>${row[4]}</td>
+                                    <td>${row[5]}</td>
+                                    <td>${row[6]}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+                sheetContent.appendChild(tabPane);
+            });
+        }
+
+        // 页面加载时读取Excel
+        window.onload = loadExcel;
+    </script>
+</body>
+</html>
