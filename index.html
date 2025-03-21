@@ -148,7 +148,7 @@
                     // 添加每个单元格
                     cells.forEach(cellData => {
                         const cell = newRow.insertCell();
-                        if (cellData.content.includes('<img')) {
+                        if (cellData.content.startsWith('<img')) {
                             // 如果是图片HTML内容
                             cell.innerHTML = cellData.content;
                         } else {
