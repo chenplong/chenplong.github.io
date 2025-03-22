@@ -1,100 +1,186 @@
-fetch('test.xlsx')
-    .then(response => response.arrayBuffer())
-    .then(data => {
-        const workbook = XLSX.read(data, { type: 'array' });
-        const sheetNames = workbook.SheetNames;
-
-        const categoryButtonsDiv = document.getElementById('categoryButtons');
-        const productListDiv = document.getElementById('productList');
-        productListDiv.innerHTML = ''; // 清空现有数据
-        categoryButtonsDiv.innerHTML = ''; // 清空按钮
-
-        // 创建按钮
-        sheetNames.forEach(sheetName => {
-            const button = document.createElement('button');
-            button.className = 'btn btn-outline-primary m-2';
-            button.textContent = sheetName;
-            button.onclick = () => loadProducts(sheetName);
-            categoryButtonsDiv.appendChild(button);
-        });
-
-        // 默认显示第一个sheet的产品
-        if (sheetNames.length > 0) {
-            loadProducts(sheetNames[0]);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="广州卡志贸易有限公司 - 提供最新的电子产品">
+    <title>广州卡志贸易有限公司商城</title>
+    <!-- 引入Bootstrap框架 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+            margin: 0;
+            padding: 0;
         }
+        header {
+            background-color: #343a40;
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+        header img {
+            width: 120px;
+            height: auto;
+        }
+        .contact-info {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .contact-info img {
+            width: 150px;
+            margin: 10px;
+        }
+        footer {
+            background-color: #343a40;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            color: #ccc;
+        }
+        .product-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .product-card img:hover {
+            transform: scale(1.1);
+        }
+        .product-card {
+            transition: transform 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <!-- 引入Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
 
-        // 加载产品信息
-        function loadProducts(sheetName) {
-            const sheet = workbook.Sheets[sheetName];
-            const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-            productListDiv.innerHTML = ''; // 清空现有卡片
+<header>
+    <img src="company-logo.png" alt="Company Logo">
+    <h1>欢迎来到 广州卡志贸易有限公司商城</h1>
+</header>
 
-            // 按照英文描述分组
-            const products = {};
+<section class="container my-5">
+    <div class="contact-info">
+        <h2>联系我们</h2>
+        <p>负责人: Jason</p>
+        <p>微信: <img src="wechat-qr.png" alt="WeChat QR Code"></p>
+        <p>Whatsapp: +8615999911625</p>
+        <p>Factory: OEM/ODM</p>
+    </div>
 
-            rows.slice(1).forEach(row => {
-                const englishDescription = row[6] || '';
-                if (!products[englishDescription]) {
-                    products[englishDescription] = [];
-                }
+    <!-- 产品选择按钮 -->
+    <div id="categoryButtons" class="d-flex justify-content-center mb-4">
+        <!-- 动态生成的按钮 -->
+    </div>
 
-                products[englishDescription].push({
-                    model: row[1] || '',
-                    chineseDescription: row[3] || '',
-                    wholesalePriceRMB: row[4] || '',
-                    wholesalePriceUSD: row[5] || '',
-                    productImage: row[0] ? `picture/${sheetName}/${row[0]}.png` : 'default-image.png'
-                });
+    <!-- 产品卡片列表 -->
+    <div id="productList" class="row row-cols-1 row-cols-md-3 g-4">
+        <!-- 动态生成的产品卡片 -->
+    </div>
+</section>
+
+<footer>
+    <p>© 2025 广州卡志贸易有限公司 版权所有</p>
+</footer>
+
+<script>
+    fetch('test.xlsx')
+        .then(response => response.arrayBuffer())
+        .then(data => {
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetNames = workbook.SheetNames;
+
+            const categoryButtonsDiv = document.getElementById('categoryButtons');
+            const productListDiv = document.getElementById('productList');
+            productListDiv.innerHTML = ''; // 清空现有数据
+            categoryButtonsDiv.innerHTML = ''; // 清空按钮
+
+            // 创建按钮
+            sheetNames.forEach(sheetName => {
+                const button = document.createElement('button');
+                button.className = 'btn btn-outline-primary m-2';
+                button.textContent = sheetName;
+                button.onclick = () => loadProducts(sheetName);
+                categoryButtonsDiv.appendChild(button);
             });
 
-            // 创建产品卡片
-            Object.keys(products).forEach(englishDescription => {
-                const productGroup = products[englishDescription];
+            // 默认显示第一个sheet的产品
+            if (sheetNames.length > 0) {
+                loadProducts(sheetNames[0]);
+            }
 
-                const card = document.createElement('div');
-                card.className = 'col';
-                let productCardHtml = `
-                    <div class="card product-card shadow-sm">
-                        <img src="${productGroup[0].productImage}" class="card-img-top" alt="Product Image" data-bs-toggle="modal" data-bs-target="#imageModal" data-image="${productGroup[0].productImage}">
-                        <div class="card-body">
-                            <h5 class="card-title">${englishDescription}</h5>
-                            <select class="form-select" id="modelSelect-${englishDescription}">
-                                ${productGroup.map(product => `<option value="${product.model}">${product.model}</option>`).join('')}
-                            </select>
-                            <p class="card-text" id="priceRMB-${englishDescription}">价格（人民币）：¥${productGroup[0].wholesalePriceRMB}</p>
-                            <p class="card-text" id="priceUSD-${englishDescription}">价格（美元）：$${productGroup[0].wholesalePriceUSD}</p>
-                            <p class="card-text" id="chineseDesc-${englishDescription}">${productGroup[0].chineseDescription}</p>
-                        </div>
-                    </div>
-                `;
-                card.innerHTML = productCardHtml;
-                productListDiv.appendChild(card);
+            // 加载产品信息
+            function loadProducts(sheetName) {
+                const sheet = workbook.Sheets[sheetName];
+                const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                productListDiv.innerHTML = ''; // 清空现有卡片
 
-                // 更新价格和描述
-                const modelSelect = document.getElementById(`modelSelect-${englishDescription}`);
-                modelSelect.addEventListener('change', (event) => {
-                    const selectedModel = event.target.value;
-                    const selectedProduct = productGroup.find(product => product.model === selectedModel);
+                // 按照英文描述分组
+                const products = {};
 
-                    document.getElementById(`priceRMB-${englishDescription}`).textContent = `价格（人民币）：¥${selectedProduct.wholesalePriceRMB}`;
-                    document.getElementById(`priceUSD-${englishDescription}`).textContent = `价格（美元）：$${selectedProduct.wholesalePriceUSD}`;
-                    document.getElementById(`chineseDesc-${englishDescription}`).textContent = selectedProduct.chineseDescription;
-                });
-            });
+                rows.slice(1).forEach(row => {
+                    const englishDescription = row[6] || '';
+                    if (!products[englishDescription]) {
+                        products[englishDescription] = [];
+                    }
 
-            // 延迟绑定图片点击事件
-            setTimeout(() => {
-                const modalImage = document.getElementById('modalImage');
-                const images = document.querySelectorAll('.product-card img');
-                images.forEach(image => {
-                    image.addEventListener('click', () => {
-                        const imageUrl = image.getAttribute('data-image');
-                        modalImage.src = imageUrl;
+                    products[englishDescription].push({
+                        model: row[1] || '',
+                        chineseDescription: row[3] || '',
+                        wholesalePriceRMB: row[4] || '',
+                        wholesalePriceUSD: row[5] || '',
+                        productImage: row[0] ? `picture/${sheetName}/${row[0]}.png` : 'default-image.png'
                     });
                 });
-            }, 100); // 延迟100ms后再绑定
-        }
-    })
-    .catch(error => {
-        console.error('读取 Excel 文件时出错:', error);
-    });
+
+                // 创建产品卡片
+                Object.keys(products).forEach(englishDescription => {
+                    const productGroup = products[englishDescription];
+
+                    const card = document.createElement('div');
+                    card.className = 'col';
+                    let productCardHtml = `
+                        <div class="card product-card shadow-sm">
+                            <img src="${productGroup[0].productImage}" class="card-img-top" alt="Product Image">
+                            <div class="card-body">
+                                <h5 class="card-title">${englishDescription}</h5>
+                                <select class="form-select" id="modelSelect-${englishDescription}">
+                                    ${productGroup.map(product => `<option value="${product.model}">${product.model}</option>`).join('')}
+                                </select>
+                                <p class="card-text" id="priceRMB-${englishDescription}">价格（人民币）：¥${productGroup[0].wholesalePriceRMB}</p>
+                                <p class="card-text" id="priceUSD-${englishDescription}">价格（美元）：$${productGroup[0].wholesalePriceUSD}</p>
+                                <p class="card-text" id="chineseDesc-${englishDescription}">${productGroup[0].chineseDescription}</p>
+                            </div>
+                        </div>
+                    `;
+                    card.innerHTML = productCardHtml;
+                    productListDiv.appendChild(card);
+
+                    // 更新价格和描述
+                    const modelSelect = document.getElementById(`modelSelect-${englishDescription}`);
+                    modelSelect.addEventListener('change', (event) => {
+                        const selectedModel = event.target.value;
+                        const selectedProduct = productGroup.find(product => product.model === selectedModel);
+
+                        document.getElementById(`priceRMB-${englishDescription}`).textContent = `价格（人民币）：¥${selectedProduct.wholesalePriceRMB}`;
+                        document.getElementById(`priceUSD-${englishDescription}`).textContent = `价格（美元）：$${selectedProduct.wholesalePriceUSD}`;
+                        document.getElementById(`chineseDesc-${englishDescription}`).textContent = selectedProduct.chineseDescription;
+                    });
+                });
+            }
+        })
+        .catch(error => {
+            console.error('读取 Excel 文件时出错:', error);
+        });
+</script>
+
+</body>
+</html>
