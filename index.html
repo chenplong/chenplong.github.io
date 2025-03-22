@@ -121,61 +121,85 @@
             function loadProducts(sheetName) {
                 const sheet = workbook.Sheets[sheetName];
                 const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-                productListDiv.innerHTML = ''; // 清空现有卡片
+                const products = {}; // 用于存储分组后的产品
 
-                // 按照英文描述分组
-                const products = {};
-
+                // 分组产品
                 rows.slice(1).forEach(row => {
+                    const model = row[1] || '';
+                    const chineseDescription = row[3] || '';
+                    const wholesalePriceRMB = row[4] || '';
+                    const wholesalePriceUSD = row[5] || '';
                     const englishDescription = row[6] || '';
+                    const imageSrc = row[0] ? `picture/${sheetName}/${row[0]}.png` : 'default-image.png';
+
                     if (!products[englishDescription]) {
-                        products[englishDescription] = [];
+                        products[englishDescription] = {
+                            modelOptions: [],
+                            imageSrc: imageSrc,
+                            chineseDescription: chineseDescription,
+                            englishDescription: englishDescription,
+                            priceRMB: wholesalePriceRMB,
+                            priceUSD: wholesalePriceUSD
+                        };
                     }
 
-                    products[englishDescription].push({
-                        model: row[1] || '',
-                        chineseDescription: row[3] || '',
-                        wholesalePriceRMB: row[4] || '',
-                        wholesalePriceUSD: row[5] || '',
-                        productImage: row[0] ? `picture/${sheetName}/${row[0]}.png` : 'default-image.png'
+                    products[englishDescription].modelOptions.push({
+                        model: model,
+                        priceRMB: wholesalePriceRMB,
+                        priceUSD: wholesalePriceUSD,
+                        chineseDescription: chineseDescription
                     });
                 });
 
-                // 创建产品卡片
-                Object.keys(products).forEach(englishDescription => {
-                    const productGroup = products[englishDescription];
+                // 清空现有卡片
+                productListDiv.innerHTML = '';
 
+                // 创建产品卡片
+                Object.values(products).forEach(product => {
                     const card = document.createElement('div');
                     card.className = 'col';
-                    let productCardHtml = `
+                    card.innerHTML = `
                         <div class="card product-card shadow-sm">
-                            <img src="${productGroup[0].productImage}" class="card-img-top" alt="Product Image">
+                            <img src="${product.imageSrc}" alt="Product Image" class="card-img-top" onerror="this.onerror=null;this.src='default-image.png';">
                             <div class="card-body">
-                                <h5 class="card-title">${englishDescription}</h5>
-                                <select class="form-select" id="modelSelect-${englishDescription}">
-                                    ${productGroup.map(product => `<option value="${product.model}">${product.model}</option>`).join('')}
+                                <h5 class="card-title">${product.englishDescription}</h5>
+                                <p class="card-text">${product.chineseDescription}</p>
+                                <select class="form-select" onchange="updatePriceAndDescription(this, '${product.englishDescription}')">
+                                    <option value="">选择型号</option>
+                                    ${product.modelOptions.map(option => `
+                                        <option value="${option.model}">${option.model}</option>
+                                    `).join('')}
                                 </select>
-                                <p class="card-text" id="priceRMB-${englishDescription}">价格（人民币）：¥${productGroup[0].wholesalePriceRMB}</p>
-                                <p class="card-text" id="priceUSD-${englishDescription}">价格（美元）：$${productGroup[0].wholesalePriceUSD}</p>
-                                <p class="card-text" id="chineseDesc-${englishDescription}">${productGroup[0].chineseDescription}</p>
+                                <p id="productPrice-${product.englishDescription}" class="card-text mt-3"><strong>Price:</strong> ¥${product.priceRMB} / $${product.priceUSD}</p>
+                                <p id="productDescription-${product.englishDescription}" class="card-text">${product.chineseDescription}</p>
                             </div>
                         </div>
                     `;
-                    card.innerHTML = productCardHtml;
                     productListDiv.appendChild(card);
-
-                    // 更新价格和描述
-                    const modelSelect = document.getElementById(`modelSelect-${englishDescription}`);
-                    modelSelect.addEventListener('change', (event) => {
-                        const selectedModel = event.target.value;
-                        const selectedProduct = productGroup.find(product => product.model === selectedModel);
-
-                        document.getElementById(`priceRMB-${englishDescription}`).textContent = `价格（人民币）：¥${selectedProduct.wholesalePriceRMB}`;
-                        document.getElementById(`priceUSD-${englishDescription}`).textContent = `价格（美元）：$${selectedProduct.wholesalePriceUSD}`;
-                        document.getElementById(`chineseDesc-${englishDescription}`).textContent = selectedProduct.chineseDescription;
-                    });
                 });
             }
+
+            // 更新价格和中文描述
+            window.updatePriceAndDescription = function (selectElement, englishDescription) {
+                const selectedModel = selectElement.value;
+                const product = Object.values(workbook.Sheets).flatMap(sheet => {
+                    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                    return rows.slice(1).map(row => ({
+                        model: row[1],
+                        englishDescription: row[6],
+                        chineseDescription: row[3],
+                        wholesalePriceRMB: row[4],
+                        wholesalePriceUSD: row[5]
+                    }));
+                }).find(p => p.englishDescription === englishDescription && p.model === selectedModel);
+
+                const priceRMB = product ? product.wholesalePriceRMB : '';
+                const priceUSD = product ? product.wholesalePriceUSD : '';
+                const chineseDescription = product ? product.chineseDescription : '';
+
+                document.getElementById(`productPrice-${englishDescription}`).innerHTML = `<strong>Price:</strong> ¥${priceRMB} / $${priceUSD}`;
+                document.getElementById(`productDescription-${englishDescription}`).innerHTML = chineseDescription;
+            };
         })
         .catch(error => {
             console.error('读取 Excel 文件时出错:', error);
