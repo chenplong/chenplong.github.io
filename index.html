@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="广州卡志贸易有限公司 - 提供最新的电子产品">
     <title>广州卡志贸易有限公司商城</title>
+    <!-- 引入Bootstrap框架 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -65,8 +67,9 @@
             color: #ccc;
         }
     </style>
-    <!-- 引入SheetJS库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <!-- 引入Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
 
@@ -84,23 +87,15 @@
         <p>Factory: OEM/ODM</p>
     </div>
 
-    <h2>产品目录</h2>
-    <table id="productsTable">
-        <thead>
-            <tr>
-                <th>Product Image</th>
-                <th>Model</th>
-                <th>Specification</th>
-                <th>Chinese Description</th>
-                <th>Wholesale Price (RMB)</th>
-                <th>Wholesale Price (USD)</th>
-                <th>English Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Product rows will be inserted here -->
-        </tbody>
-    </table>
+    <!-- 产品选择按钮 -->
+    <div id="categoryButtons" class="d-flex justify-content-center mb-4">
+        <!-- 动态生成的按钮 -->
+    </div>
+
+    <!-- 产品列表 -->
+    <div id="productList">
+        <!-- 动态生成的表格 -->
+    </div>
 </section>
 
 <footer>
@@ -108,56 +103,80 @@
 </footer>
 
 <script>
-    // 读取 test.xlsx 文件
     fetch('test.xlsx')
         .then(response => response.arrayBuffer())
         .then(data => {
             const workbook = XLSX.read(data, { type: 'array' });
-            const tableBody = document.getElementById('productsTable').getElementsByTagName('tbody')[0];
-            tableBody.innerHTML = ''; // 清空现有数据
+            const sheetNames = workbook.SheetNames;
 
-            // 遍历 Excel 文件的所有 sheet 表
-            workbook.SheetNames.forEach(sheetName => {
+            const categoryButtonsDiv = document.getElementById('categoryButtons');
+            const productListDiv = document.getElementById('productList');
+            productListDiv.innerHTML = ''; // 清空现有数据
+            categoryButtonsDiv.innerHTML = ''; // 清空按钮
+
+            // 创建按钮
+            sheetNames.forEach(sheetName => {
+                const button = document.createElement('button');
+                button.className = 'btn btn-primary m-2';
+                button.textContent = sheetName;
+                button.onclick = () => loadProducts(sheetName);
+                categoryButtonsDiv.appendChild(button);
+            });
+
+            // 默认显示第一个sheet的产品
+            if (sheetNames.length > 0) {
+                loadProducts(sheetNames[0]);
+            }
+
+            // 加载产品信息
+            function loadProducts(sheetName) {
                 const sheet = workbook.Sheets[sheetName];
                 const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                const table = document.createElement('table');
+                table.className = 'table table-dark table-bordered';
 
-                // 跳过第一行（标题行），然后处理每个产品
+                // 创建表头
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                ['Product Image', 'Model', 'Specification', 'Chinese Description', 'Wholesale Price (RMB)', 'Wholesale Price (USD)', 'English Description'].forEach(text => {
+                    const th = document.createElement('th');
+                    th.textContent = text;
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+
+                // 创建表格内容
+                const tbody = document.createElement('tbody');
                 rows.slice(1).forEach(row => {
-                    const newRow = tableBody.insertRow();
-                    
-                    // 根据列的顺序读取并赋值
-                    const productImage = row[0] ? `<img src="picture/${sheetName}/${row[0]}.png" alt="Product Image" style="width: 50px;" onerror="this.onerror=null;this.src='default-image.png';">` : ''; 
-                    const model = row[1] || '';        
-                    const specification = row[2] || ''; 
-                    const chineseDescription = row[3] || ''; 
-                    const wholesalePriceRMB = row[4] || ''; 
-                    const wholesalePriceUSD = row[5] || ''; 
-                    const englishDescription = row[6] || ''; 
-
-                    // 插入每个产品的表格数据
+                    const newRow = document.createElement('tr');
                     const cells = [
-                        { content: productImage },  // 插入图片
-                        { content: model },         // 插入型号
-                        { content: specification }, // 插入规格
-                        { content: chineseDescription }, // 插入中文描述
-                        { content: wholesalePriceRMB }, // 插入批发价格（人民币）
-                        { content: wholesalePriceUSD }, // 插入批发价格（美元）
-                        { content: englishDescription } // 插入英文描述
+                        { content: row[0] ? `<img src="picture/${sheetName}/${row[0]}.png" alt="Product Image" style="width: 50px;" onerror="this.onerror=null;this.src='default-image.png';">` : '' },
+                        { content: row[1] || '' },
+                        { content: row[2] || '' },
+                        { content: row[3] || '' },
+                        { content: row[4] || '' },
+                        { content: row[5] || '' },
+                        { content: row[6] || '' }
                     ];
 
-                    // 添加每个单元格
                     cells.forEach(cellData => {
-                        const cell = newRow.insertCell();
+                        const cell = document.createElement('td');
                         if (typeof cellData.content === 'string' && cellData.content.startsWith('<img')) {
-                            // 如果是图片HTML内容
                             cell.innerHTML = cellData.content;
                         } else {
-                            // 否则是文本内容
-                            cell.innerText = cellData.content;
+                            cell.textContent = cellData.content;
                         }
+                        newRow.appendChild(cell);
                     });
+
+                    tbody.appendChild(newRow);
                 });
-            });
+
+                table.appendChild(tbody);
+                productListDiv.innerHTML = ''; // 清空现有表格
+                productListDiv.appendChild(table);
+            }
         })
         .catch(error => {
             console.error('读取 Excel 文件时出错:', error);
