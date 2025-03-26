@@ -3,172 +3,152 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Guangzhou KAZHI Photographic Equipment Factory - Professional Imaging Solutions">
-  <title>Guangzhou KAZHI Photographic Equipment Shop</title>
-  <!-- Bootstrap 5.3.3 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="description" content="Guangzhou KAZHI Photographic equipment factory shop - Professional photography equipment supplier">
+  <title>Guangzhou KAZHI Photographic Equipment Factory</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary-color: #2563eb;
-      --hover-color: #1d4ed8;
-      --gradient-start: #1e3a8a;
-      --gradient-end: #2563eb;
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --hover-color: #2980b9;
     }
 
     body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background-color: #f8fafc;
-      color: #1e293b;
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8f9fa;
+      color: #2c3e50;
     }
 
     header {
-      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-      color: white;
-      padding: 1.5rem 1rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      background: linear-gradient(135deg, var(--primary-color), #34495e);
+      padding: 1.5rem 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 
-    .top-row {
+    .brand-section {
       display: flex;
       align-items: center;
-      justify-content: center;
       gap: 1rem;
       margin-bottom: 1.5rem;
     }
 
-    .top-row img {
+    .brand-logo {
       width: 60px;
       height: 60px;
-      border-radius: 12px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      transition: transform 0.3s ease;
     }
 
-    .top-row h1 {
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin: 0;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    .brand-logo:hover {
+      transform: rotate(15deg);
     }
 
-    .nav-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      justify-content: center;
+    .nav-tabs .nav-link {
+      border: none;
+      font-weight: 500;
+      color: var(--primary-color);
+      transition: all 0.3s ease;
     }
 
-    .nav-row .btn {
-      border-radius: 8px;
-      padding: 0.5rem 1.25rem;
-      transition: all 0.2s ease;
+    .nav-tabs .nav-link.active {
+      color: var(--secondary-color);
+      border-bottom: 3px solid var(--secondary-color);
     }
 
     .product-card {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      border-radius: 12px;
       border: none;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border-radius: 15px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       background: white;
+      overflow: hidden;
     }
 
     .product-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      transform: translateY(-8px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.12);
     }
 
-    .product-card .card-body {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 1.25rem;
-    }
-
-    .product-card img {
-      width: 100%;
-      height: 240px;
+    .product-image {
+      height: 220px;
       object-fit: cover;
-      border-radius: 12px 12px 0 0;
+      border-radius: 15px 15px 0 0;
+      transition: transform 0.3s ease;
     }
 
-    .table-responsive {
-      flex: 1;
-      overflow-y: auto;
-      max-height: 220px;
-      margin: 0.75rem 0;
+    .card-body {
+      padding: 1.5rem;
     }
 
-    .table {
-      font-size: 0.875rem;
-      margin-bottom: 0;
+    .product-card .table {
+      font-size: 0.9em;
+      margin: 1rem 0;
     }
 
-    .table th {
-      background-color: #f1f5f9;
-      font-weight: 600;
-      padding: 0.75rem;
-    }
-
-    .table td {
-      padding: 0.5rem;
-    }
-
-    .btn-primary {
+    .product-card .table th {
       background-color: var(--primary-color);
-      border: none;
-      border-radius: 8px;
-      padding: 0.5rem 1.5rem;
-      align-self: center;
-      margin-top: auto;
+      color: white;
+      font-weight: 500;
     }
 
-    .btn-primary:hover {
+    .detail-btn {
+      background-color: var(--secondary-color);
+      border: none;
+      padding: 0.5rem 1.5rem;
+      border-radius: 25px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .detail-btn:hover {
       background-color: var(--hover-color);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
     }
 
     footer {
-      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-      color: white;
-      padding: 1.5rem;
+      background: var(--primary-color);
+      color: rgba(255,255,255,0.8);
+      padding: 2rem 0;
       margin-top: 3rem;
-      font-size: 0.9rem;
     }
 
     .modal-content {
-      border-radius: 12px;
+      border-radius: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .product-card {
+        margin-bottom: 1.5rem;
+      }
     }
   </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
 
 <header>
   <div class="container">
-    <div class="top-row">
-      <img src="company-logo.png" alt="Factory Logo">
-      <h1>Guangzhou KAZHI Photographic Equipment Factory Shop</h1>
+    <div class="brand-section justify-content-center">
+      <img src="company-logo.png" alt="KAZHI Logo" class="brand-logo">
+      <h1 class="text-white mb-0">Guangzhou KAZHI Photographic Equipment Factory</h1>
     </div>
-    <div class="nav-row">
-      <button id="contactBtn" class="btn btn-light">Contact</button>
-      <span id="sheetButtons" class="d-flex flex-wrap gap-2"></span>
+    <div class="d-flex justify-content-center gap-3">
+      <button id="contactBtn" class="btn btn-light rounded-pill px-4">Contact</button>
+      <div id="sheetButtons" class="d-flex gap-2"></div>
     </div>
   </div>
 </header>
 
-<main class="container py-5">
+<main class="container my-5">
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="mainContent"></div>
 </main>
 
-<footer class="text-center">
-  <div class="container">
-    <p class="mb-0">© 2024 Guangzhou KAZHI Photographic Equipment Factory. All rights reserved</p>
+<footer>
+  <div class="container text-center">
+    <p class="mb-0">&copy; 2025 Guangzhou KAZHI Photographic Equipment Factory. All rights reserved</p>
   </div>
 </footer>
 
+<!-- Modal -->
 <div class="modal fade" id="englishDescModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -181,10 +161,12 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
 <script>
   let workbook;
 
-  // Load Excel data
   fetch('test.xlsx')
     .then(response => response.arrayBuffer())
     .then(data => {
@@ -193,18 +175,16 @@
       const sheetButtons = document.getElementById('sheetButtons');
       
       sheetNames.forEach(sheetName => {
-        const btn = document.createElement('button');
-        btn.className = 'btn btn-outline-light';
-        btn.textContent = sheetName;
-        btn.onclick = () => loadProducts(sheetName);
-        sheetButtons.appendChild(btn);
+        const button = document.createElement('button');
+        button.className = 'btn btn-outline-light rounded-pill';
+        button.textContent = sheetName;
+        button.onclick = () => loadProducts(sheetName);
+        sheetButtons.appendChild(button);
       });
+      
+      if (sheetNames.length > 0) loadProducts(sheetNames[0]);
+    });
 
-      if (sheetNames.length) loadProducts(sheetNames[0]);
-    })
-    .catch(console.error);
-
-  // Contact button handler
   document.getElementById('contactBtn').addEventListener('click', showContact);
 
   function loadProducts(sheetName) {
@@ -213,42 +193,42 @@
     const products = {};
 
     rows.slice(1).forEach(row => {
-      const [imageCode, model, , description, priceRMB, priceUSD, engDesc] = row;
-      const productKey = engDesc || description;
-      
-      if (!products[productKey]) {
-        products[productKey] = {
-          engDesc,
+      const [imageCode, model, , description, priceRMB, priceUSD, englishDesc] = row;
+      const imageSrc = imageCode ? `picture/${sheetName}/${imageCode}.png` : 'default-image.png';
+
+      if (!products[englishDesc]) {
+        products[englishDesc] = {
+          englishDesc,
           models: [],
-          image: imageCode ? `picture/${sheetName}/${imageCode}.png` : 'default-image.png',
+          imageSrc,
           description
         };
       }
 
-      products[productKey].models.push({
-        model: model || 'Standard',
+      products[englishDesc].models.push({
+        model: model || 'N/A',
         priceRMB: priceRMB || 'Contact',
         priceUSD: priceUSD || 'Contact',
-        description: description || 'See details'
+        description: description || 'No description'
       });
     });
 
     const mainContent = document.getElementById('mainContent');
-    mainContent.innerHTML = Object.values(products).map(product => `
-      <div class="col">
-        <div class="card product-card h-100">
-          <img src="${product.image}" class="card-img-top" 
+    mainContent.innerHTML = '';
+
+    Object.values(products).forEach(product => {
+      const card = document.createElement('div');
+      card.className = 'col';
+      card.innerHTML = `
+        <div class="product-card h-100">
+          <img src="${product.imageSrc}" class="product-image" 
                onerror="this.src='default-image.png'">
           <div class="card-body">
-            <h5 class="card-title mb-3">${product.description}</h5>
+            <p class="card-text text-muted mb-3">${product.description}</p>
             <div class="table-responsive">
-              <table class="table table-hover">
+              <table class="table table-striped table-hover">
                 <thead>
-                  <tr>
-                    <th>Model</th>
-                    <th>¥ Price</th>
-                    <th>$ Price</th>
-                  </tr>
+                  <tr><th>Model</th><th>¥ Price</th><th>$ Price</th><th>Specs</th></tr>
                 </thead>
                 <tbody>
                   ${product.models.map(m => `
@@ -256,43 +236,49 @@
                       <td>${m.model}</td>
                       <td>${m.priceRMB}</td>
                       <td>${m.priceUSD}</td>
+                      <td>${m.description}</td>
                     </tr>
                   `).join('')}
                 </tbody>
               </table>
             </div>
-            <button class="btn btn-primary" 
-                    onclick="showEnglishDescription('${product.engDesc}')">
+            <button onclick="showEnglishDescription('${product.englishDesc.replace(/'/g, "\\'")}')" 
+                    class="detail-btn btn btn-primary w-100">
               View Details
             </button>
           </div>
         </div>
-      </div>
-    `).join('');
+      `;
+      mainContent.appendChild(card);
+    });
   }
 
   function showContact() {
-    document.getElementById('mainContent').innerHTML = `
+    const mainContent = document.getElementById('mainContent');
+    mainContent.innerHTML = `
       <div class="col-12">
-        <div class="card shadow-lg">
-          <div class="card-body text-center">
-            <h3 class="mb-4">Contact Information</h3>
-            <div class="d-grid gap-3">
-              <div>
-                <h5>Sales Manager</h5>
-                <p class="mb-0">Jason Chen</p>
-              </div>
-              <div>
+        <div class="product-card p-4">
+          <h3 class="mb-4">Contact Information</h3>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="p-3 bg-light rounded">
                 <h5>WeChat</h5>
-                <img src="wechat-qr.png" alt="WeChat QR" 
-                     class="img-fluid rounded-3" style="max-width: 150px;">
+                <img src="wechat-qr.png" alt="WeChat QR" class="img-fluid" style="max-width: 150px;">
               </div>
-              <div>
+            </div>
+            <div class="col-md-6">
+              <div class="p-3 bg-light rounded">
                 <h5>WhatsApp</h5>
-                <a href="https://wa.me/+8615999911625" 
-                   class="btn btn-success">
-                  +86 159 9991 1625
+                <p class="mb-1">+8615999911625</p>
+                <a href="https://wa.me/8615999911625" class="btn btn-success mt-2">
+                  Start Chat
                 </a>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="p-3 bg-light rounded">
+                <h5>Factory Services</h5>
+                <p class="mb-0">OEM/ODM Services Available</p>
               </div>
             </div>
           </div>
@@ -302,9 +288,7 @@
   }
 
   function showEnglishDescription(desc) {
-    document.getElementById('englishDescModalBody').innerHTML = `
-      <div class="lead">${desc}</div>
-    `;
+    document.getElementById('englishDescModalBody').innerHTML = desc;
     new bootstrap.Modal('#englishDescModal').show();
   }
 </script>
