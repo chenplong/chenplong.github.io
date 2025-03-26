@@ -17,39 +17,28 @@
     }
     header {
       background-color: #343a40;
-      padding: 20px;
-      text-align: center;
       color: white;
+      padding: 10px;
     }
-    header img {
-      width: 120px;
-      height: auto;
-    }
-    .top-info {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      padding: 20px;
-      background-color: #e9ecef;
-      margin-bottom: 20px;
-    }
-    .contact-info, .category-buttons {
+    /* 第一行：logo 与标题 */
+    .top-row {
       display: flex;
       align-items: center;
-      gap: 15px;
-      flex-wrap: wrap;
     }
-    .contact-info img {
+    .top-row img {
       width: 50px;
       height: auto;
     }
-    footer {
-      background-color: #343a40;
-      padding: 10px;
-      text-align: center;
-      font-size: 14px;
-      color: #ccc;
+    .top-row h1 {
+      font-size: 1.5rem;
+      margin: 0 0 0 10px;
+    }
+    /* 第二行：导航按钮 */
+    .nav-row {
+      margin-top: 10px;
+    }
+    .nav-row .btn {
+      margin-right: 10px;
     }
     .product-card img {
       width: 100%;
@@ -66,6 +55,13 @@
     .product-card:hover {
       transform: translateY(-5px);
     }
+    footer {
+      background-color: #343a40;
+      padding: 10px;
+      text-align: center;
+      font-size: 14px;
+      color: #ccc;
+    }
     .table th, .table td {
       vertical-align: middle;
     }
@@ -77,149 +73,158 @@
 <body>
 
 <header>
-  <img src="company-logo.png" alt="Company Logo">
-  <h1>Welcome to Guangzhou KAZHI Trading Co., Ltd. Store</h1>
+  <!-- 第一行：Logo 与标题 -->
+  <div class="top-row">
+    <img src="kazhi-icon.png" alt="Kazhi Icon">
+    <h1>Welcome to Guangzhou KAZHI Trading Co., Ltd. Store</h1>
+  </div>
+  <!-- 第二行：导航按钮 -->
+  <div class="nav-row mt-2">
+    <button id="contactBtn" class="btn btn-outline-light">Contact</button>
+    <span id="sheetButtons"></span>
+  </div>
 </header>
 
-<section class="container my-5">
-  <!-- 顶部合并联系方式和分类按钮 -->
-  <div class="top-info">
-    <div class="contact-info">
-      <div>
-        <strong>Contact Us</strong>
-      </div>
-      <div>
-        <strong>Contact Person:</strong> Jason
-      </div>
-      <div>
-        <strong>WeChat:</strong> <img src="wechat-qr.png" alt="WeChat QR Code">
-      </div>
-      <div>
-        <strong>Whatsapp:</strong> +8615999911625
-      </div>
-      <div>
-        <strong>Factory:</strong> OEM/ODM
-      </div>
-    </div>
-    <div class="category-buttons" id="categoryButtons">
-      <!-- 动态生成的 sheet 按钮 -->
-    </div>
-  </div>
-
-  <!-- 产品卡片列表 -->
-  <div id="productList" class="row row-cols-1 row-cols-md-3 g-4">
-    <!-- 动态生成的产品卡片 -->
-  </div>
-</section>
+<!-- 主内容区域：显示产品或联系方式 -->
+<main class="container my-4" id="mainContent">
+  <!-- 初始内容由点击按钮加载 -->
+</main>
 
 <footer>
   <p>© 2025 Guangzhou KAZHI Trading Co., Ltd. All Rights Reserved</p>
 </footer>
 
 <script>
+  let workbook; // 用于存储 Excel 工作簿数据
+
+  // 加载 Excel 文件
   fetch('test.xlsx')
     .then(response => response.arrayBuffer())
     .then(data => {
-      const workbook = XLSX.read(data, { type: 'array' });
+      workbook = XLSX.read(data, { type: 'array' });
       const sheetNames = workbook.SheetNames;
 
-      const categoryButtonsDiv = document.getElementById('categoryButtons');
-      const productListDiv = document.getElementById('productList');
-      productListDiv.innerHTML = ''; // 清空现有数据
-      categoryButtonsDiv.innerHTML = ''; // 清空按钮
-
-      // 创建 sheet 按钮
+      // 动态生成 sheet 按钮
+      const sheetButtonsSpan = document.getElementById('sheetButtons');
+      sheetButtonsSpan.innerHTML = ''; // 清空按钮区域
       sheetNames.forEach(sheetName => {
-        const button = document.createElement('button');
-        button.className = 'btn btn-outline-primary m-2';
-        button.textContent = sheetName;
-        button.onclick = () => loadProducts(sheetName);
-        categoryButtonsDiv.appendChild(button);
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-outline-light';
+        btn.textContent = sheetName;
+        btn.onclick = () => loadProducts(sheetName);
+        sheetButtonsSpan.appendChild(btn);
       });
 
-      // 默认显示第一个sheet的产品
+      // 默认加载第一个 sheet 的产品信息（如果存在）
       if (sheetNames.length > 0) {
         loadProducts(sheetNames[0]);
-      }
-
-      // 加载产品信息
-      function loadProducts(sheetName) {
-        const sheet = workbook.Sheets[sheetName];
-        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-        const products = {}; // 用于存储分组后的产品
-
-        // 分组产品（根据英文描述分组）
-        rows.slice(1).forEach(row => {
-          const imageCode = row[0];
-          const model = row[1] || '';
-          const description = row[3] || ''; // 原始中文描述
-          const wholesalePriceRMB = row[4] || '';
-          const wholesalePriceUSD = row[5] || '';
-          const englishDescription = row[6] || '';
-          const imageSrc = imageCode ? `picture/${sheetName}/${imageCode}.png` : 'default-image.png';
-
-          if (!products[englishDescription]) {
-            products[englishDescription] = {
-              modelOptions: [],
-              imageSrc: imageSrc,
-              description: description,
-              englishDescription: englishDescription
-            };
-          }
-
-          products[englishDescription].modelOptions.push({
-            model: model,
-            priceRMB: wholesalePriceRMB,
-            priceUSD: wholesalePriceUSD,
-            description: description
-          });
-        });
-
-        // 清空现有卡片
-        productListDiv.innerHTML = '';
-
-        // 创建产品卡片，每个卡片显示一个产品及其所有型号信息（表格展示）
-        Object.values(products).forEach(product => {
-          const card = document.createElement('div');
-          card.className = 'col';
-          card.innerHTML = `
-            <div class="card product-card shadow-sm">
-              <img src="${product.imageSrc}" alt="Product Image" class="card-img-top" onerror="this.onerror=null;this.src='default-image.png';">
-              <div class="card-body">
-                <h5 class="card-title">${product.englishDescription}</h5>
-                <p class="card-text">${product.description}</p>
-                <div class="table-responsive">
-                  <table class="table table-bordered">
-                    <thead>
-                      <tr>
-                        <th>Model</th>
-                        <th>Price (¥)</th>
-                        <th>Price ($)</th>
-                        <th>Description</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      ${product.modelOptions.map(option => `
-                        <tr>
-                          <td>${option.model}</td>
-                          <td>${option.priceRMB}</td>
-                          <td>${option.priceUSD}</td>
-                          <td>${option.description}</td>
-                        </tr>
-                      `).join('')}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          `;
-          productListDiv.appendChild(card);
-        });
       }
     })
     .catch(error => {
       console.error('Error reading Excel file:', error);
     });
+
+  // Contact 按钮事件：显示联系方式
+  document.getElementById('contactBtn').addEventListener('click', showContact);
+
+  // 显示产品信息（根据指定 sheet）
+  function loadProducts(sheetName) {
+    const sheet = workbook.Sheets[sheetName];
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+    const products = {};
+
+    // 根据英文描述对产品分组（同一产品不同型号）
+    rows.slice(1).forEach(row => {
+      const imageCode = row[0];
+      const model = row[1] || '';
+      const description = row[3] || ''; // 产品描述
+      const wholesalePriceRMB = row[4] || '';
+      const wholesalePriceUSD = row[5] || '';
+      const englishDescription = row[6] || '';
+      const imageSrc = imageCode ? `picture/${sheetName}/${imageCode}.png` : 'default-image.png';
+
+      if (!products[englishDescription]) {
+        products[englishDescription] = {
+          modelOptions: [],
+          imageSrc: imageSrc,
+          description: description,
+          englishDescription: englishDescription
+        };
+      }
+
+      products[englishDescription].modelOptions.push({
+        model: model,
+        priceRMB: wholesalePriceRMB,
+        priceUSD: wholesalePriceUSD,
+        description: description
+      });
+    });
+
+    // 构建产品卡片（每个卡片显示产品图片、标题、描述及型号价格对比表格）
+    const mainContent = document.getElementById('mainContent');
+    mainContent.innerHTML = ''; // 清空主内容区域
+
+    const rowDiv = document.createElement('div');
+    rowDiv.className = 'row row-cols-1 row-cols-md-3 g-4';
+
+    Object.values(products).forEach(product => {
+      const colDiv = document.createElement('div');
+      colDiv.className = 'col';
+      colDiv.innerHTML = `
+        <div class="card product-card shadow-sm">
+          <img src="${product.imageSrc}" alt="Product Image" class="card-img-top" onerror="this.onerror=null;this.src='default-image.png';">
+          <div class="card-body">
+            <h5 class="card-title">${product.englishDescription}</h5>
+            <p class="card-text">${product.description}</p>
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Model</th>
+                    <th>Price (¥)</th>
+                    <th>Price ($)</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${product.modelOptions.map(option => `
+                    <tr>
+                      <td>${option.model}</td>
+                      <td>${option.priceRMB}</td>
+                      <td>${option.priceUSD}</td>
+                      <td>${option.description}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+      rowDiv.appendChild(colDiv);
+    });
+
+    mainContent.appendChild(rowDiv);
+  }
+
+  // 显示联系方式
+  function showContact() {
+    const mainContent = document.getElementById('mainContent');
+    mainContent.innerHTML = `
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h3>Contact Us</h3>
+          <p><strong>Contact Person:</strong> Jason</p>
+          <p>
+            <strong>WeChat:</strong> 
+            <img src="wechat-qr.png" alt="WeChat QR Code" style="width:50px;height:auto;">
+          </p>
+          <p><strong>Whatsapp:</strong> +8615999911625</p>
+          <p><strong>Factory:</strong> OEM/ODM</p>
+        </div>
+      </div>
+    `;
+  }
 </script>
 
 </body>
