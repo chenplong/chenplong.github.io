@@ -99,6 +99,21 @@
   <p>© 2025 Guangzhou KAZHI Trading Co., Ltd. All Rights Reserved</p>
 </footer>
 
+<!-- 英文描述模态框 -->
+<div class="modal fade" id="englishDescModal" tabindex="-1" aria-labelledby="englishDescModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="englishDescModalLabel">Detailed English Description</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="englishDescModalBody">
+        <!-- 英文描述内容 -->
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   let workbook; // 用于存储 Excel 工作簿数据
 
@@ -150,6 +165,7 @@
 
       if (!products[englishDescription]) {
         products[englishDescription] = {
+          englishDescription: englishDescription,
           modelOptions: [],
           imageSrc: imageSrc,
           description: description
@@ -164,7 +180,7 @@
       });
     });
 
-    // 构建产品卡片（每个卡片显示产品图片、描述及型号价格对比表格）
+    // 构建产品卡片（每个卡片显示产品图片、描述、型号价格对比表格及“View Details”按钮）
     const mainContent = document.getElementById('mainContent');
     mainContent.innerHTML = ''; // 清空主内容区域
 
@@ -201,6 +217,7 @@
                 </tbody>
               </table>
             </div>
+            <button class="btn btn-primary mt-2" onclick='showEnglishDescription(${JSON.stringify(product.englishDescription)})'>View Details</button>
           </div>
         </div>
       `;
@@ -227,6 +244,13 @@
         </div>
       </div>
     `;
+  }
+
+  // 弹出模态框显示详细的英语描述
+  function showEnglishDescription(desc) {
+    document.getElementById('englishDescModalBody').innerHTML = desc;
+    var englishDescModal = new bootstrap.Modal(document.getElementById('englishDescModal'));
+    englishDescModal.show();
   }
 </script>
 
