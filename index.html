@@ -80,7 +80,7 @@
 <header>
   <!-- 第一行：Logo 与标题 -->
   <div class="top-row">
-    <img src="company-logo.png" alt="Kazhi Icon">
+    <img src="kazhi-icon.png" alt="Kazhi Icon">
     <h1>Welcome to Guangzhou KAZHI Trading Co., Ltd. Store</h1>
   </div>
   <!-- 第二行：导航按钮 -->
@@ -152,8 +152,7 @@
         products[englishDescription] = {
           modelOptions: [],
           imageSrc: imageSrc,
-          description: description,
-          englishDescription: englishDescription
+          description: description
         };
       }
 
@@ -165,7 +164,7 @@
       });
     });
 
-    // 构建产品卡片（每个卡片显示产品图片、标题、描述及型号价格对比表格）
+    // 构建产品卡片（每个卡片显示产品图片、描述及型号价格对比表格）
     const mainContent = document.getElementById('mainContent');
     mainContent.innerHTML = ''; // 清空主内容区域
 
@@ -179,7 +178,6 @@
         <div class="card product-card shadow-sm">
           <img src="${product.imageSrc}" alt="Product Image" class="card-img-top" onerror="this.onerror=null;this.src='default-image.png';">
           <div class="card-body">
-            <h5 class="card-title">${product.englishDescription}</h5>
             <p class="card-text">${product.description}</p>
             <div class="table-responsive">
               <table class="table table-bordered">
