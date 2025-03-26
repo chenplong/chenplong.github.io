@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="广州卡志贸易有限公司 - 提供最新的电子产品">
-  <title>广州卡志贸易有限公司商城</title>
+  <meta name="description" content="Guangzhou KAZHI Trading Co., Ltd. - Providing the latest electronic products">
+  <title>Guangzhou KAZHI Trading Co., Ltd. Store</title>
   <!-- 引入Bootstrap框架 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
@@ -25,13 +25,24 @@
       width: 120px;
       height: auto;
     }
-    .contact-info {
-      margin-top: 30px;
-      text-align: center;
+    .top-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: 20px;
+      background-color: #e9ecef;
+      margin-bottom: 20px;
+    }
+    .contact-info, .category-buttons {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
     }
     .contact-info img {
-      width: 150px;
-      margin: 10px;
+      width: 50px;
+      height: auto;
     }
     footer {
       background-color: #343a40;
@@ -55,6 +66,9 @@
     .product-card:hover {
       transform: translateY(-5px);
     }
+    .table th, .table td {
+      vertical-align: middle;
+    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
   <!-- 引入Bootstrap JS -->
@@ -64,21 +78,32 @@
 
 <header>
   <img src="company-logo.png" alt="Company Logo">
-  <h1>欢迎来到 广州卡志贸易有限公司商城</h1>
+  <h1>Welcome to Guangzhou KAZHI Trading Co., Ltd. Store</h1>
 </header>
 
 <section class="container my-5">
-  <div class="contact-info">
-    <h2>联系我们</h2>
-    <p>负责人: Jason</p>
-    <p>微信: <img src="wechat-qr.png" alt="WeChat QR Code"></p>
-    <p>Whatsapp: +8615999911625</p>
-    <p>Factory: OEM/ODM</p>
-  </div>
-
-  <!-- 产品选择按钮 -->
-  <div id="categoryButtons" class="d-flex justify-content-center mb-4">
-    <!-- 动态生成的按钮 -->
+  <!-- 顶部合并联系方式和分类按钮 -->
+  <div class="top-info">
+    <div class="contact-info">
+      <div>
+        <strong>Contact Us</strong>
+      </div>
+      <div>
+        <strong>Contact Person:</strong> Jason
+      </div>
+      <div>
+        <strong>WeChat:</strong> <img src="wechat-qr.png" alt="WeChat QR Code">
+      </div>
+      <div>
+        <strong>Whatsapp:</strong> +8615999911625
+      </div>
+      <div>
+        <strong>Factory:</strong> OEM/ODM
+      </div>
+    </div>
+    <div class="category-buttons" id="categoryButtons">
+      <!-- 动态生成的 sheet 按钮 -->
+    </div>
   </div>
 
   <!-- 产品卡片列表 -->
@@ -88,7 +113,7 @@
 </section>
 
 <footer>
-  <p>© 2025 广州卡志贸易有限公司 版权所有</p>
+  <p>© 2025 Guangzhou KAZHI Trading Co., Ltd. All Rights Reserved</p>
 </footer>
 
 <script>
@@ -103,7 +128,7 @@
       productListDiv.innerHTML = ''; // 清空现有数据
       categoryButtonsDiv.innerHTML = ''; // 清空按钮
 
-      // 创建分类按钮
+      // 创建 sheet 按钮
       sheetNames.forEach(sheetName => {
         const button = document.createElement('button');
         button.className = 'btn btn-outline-primary m-2';
@@ -127,7 +152,7 @@
         rows.slice(1).forEach(row => {
           const imageCode = row[0];
           const model = row[1] || '';
-          const chineseDescription = row[3] || '';
+          const description = row[3] || ''; // 原始中文描述
           const wholesalePriceRMB = row[4] || '';
           const wholesalePriceUSD = row[5] || '';
           const englishDescription = row[6] || '';
@@ -137,7 +162,7 @@
             products[englishDescription] = {
               modelOptions: [],
               imageSrc: imageSrc,
-              chineseDescription: chineseDescription,
+              description: description,
               englishDescription: englishDescription
             };
           }
@@ -146,14 +171,14 @@
             model: model,
             priceRMB: wholesalePriceRMB,
             priceUSD: wholesalePriceUSD,
-            chineseDescription: chineseDescription
+            description: description
           });
         });
 
         // 清空现有卡片
         productListDiv.innerHTML = '';
 
-        // 创建产品卡片，每个卡片显示一个产品及其所有型号列表
+        // 创建产品卡片，每个卡片显示一个产品及其所有型号信息（表格展示）
         Object.values(products).forEach(product => {
           const card = document.createElement('div');
           card.className = 'col';
@@ -162,16 +187,29 @@
               <img src="${product.imageSrc}" alt="Product Image" class="card-img-top" onerror="this.onerror=null;this.src='default-image.png';">
               <div class="card-body">
                 <h5 class="card-title">${product.englishDescription}</h5>
-                <p class="card-text">${product.chineseDescription}</p>
-                <ul class="list-group list-group-flush">
-                  ${product.modelOptions.map(option => `
-                    <li class="list-group-item">
-                      <strong>型号:</strong> ${option.model}<br>
-                      <strong>价格:</strong> ¥${option.priceRMB} / $${option.priceUSD}<br>
-                      <strong>描述:</strong> ${option.chineseDescription}
-                    </li>
-                  `).join('')}
-                </ul>
+                <p class="card-text">${product.description}</p>
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Model</th>
+                        <th>Price (¥)</th>
+                        <th>Price ($)</th>
+                        <th>Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${product.modelOptions.map(option => `
+                        <tr>
+                          <td>${option.model}</td>
+                          <td>${option.priceRMB}</td>
+                          <td>${option.priceUSD}</td>
+                          <td>${option.description}</td>
+                        </tr>
+                      `).join('')}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           `;
@@ -180,7 +218,7 @@
       }
     })
     .catch(error => {
-      console.error('读取 Excel 文件时出错:', error);
+      console.error('Error reading Excel file:', error);
     });
 </script>
 
