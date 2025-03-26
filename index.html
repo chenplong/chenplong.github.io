@@ -95,6 +95,11 @@
   // 定义全局变量，用于存储当前加载的产品数据
   let currentProducts = {};
 
+  // 工具函数：生成安全的 id（仅保留字母和数字）
+  function sanitizeId(str) {
+      return str.replace(/[^a-zA-Z0-9]/g, '');
+  }
+
   fetch('test.xlsx')
       .then(response => response.arrayBuffer())
       .then(data => {
@@ -102,118 +107,4 @@
           const sheetNames = workbook.SheetNames;
 
           const categoryButtonsDiv = document.getElementById('categoryButtons');
-          const productListDiv = document.getElementById('productList');
-          productListDiv.innerHTML = ''; // 清空现有数据
-          categoryButtonsDiv.innerHTML = ''; // 清空按钮
-
-          // 创建按钮
-          sheetNames.forEach(sheetName => {
-              const button = document.createElement('button');
-              button.className = 'btn btn-outline-primary m-2';
-              button.textContent = sheetName;
-              button.onclick = () => loadProducts(sheetName);
-              categoryButtonsDiv.appendChild(button);
-          });
-
-          // 默认显示第一个sheet的产品
-          if (sheetNames.length > 0) {
-              loadProducts(sheetNames[0]);
-          }
-
-          // 加载产品信息
-          function loadProducts(sheetName) {
-              const sheet = workbook.Sheets[sheetName];
-              const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-              // 使用全局变量存储当前产品数据
-              currentProducts = {};
-
-              // 分组产品
-              rows.slice(1).forEach(row => {
-                  const model = row[1] || '';
-                  const chineseDescription = row[3] || '';
-                  const wholesalePriceRMB = row[4] || '';
-                  const wholesalePriceUSD = row[5] || '';
-                  const englishDescription = row[6] || '';
-                  const imageSrc = row[0] ? `picture/${sheetName}/${row[0]}.png` : 'default-image.png';
-
-                  if (!currentProducts[englishDescription]) {
-                      currentProducts[englishDescription] = {
-                          modelOptions: [],
-                          imageSrc: imageSrc,
-                          chineseDescription: chineseDescription,
-                          englishDescription: englishDescription,
-                          priceRMB: wholesalePriceRMB,
-                          priceUSD: wholesalePriceUSD
-                      };
-                  }
-
-                  currentProducts[englishDescription].modelOptions.push({
-                      model: model,
-                      priceRMB: wholesalePriceRMB,
-                      priceUSD: wholesalePriceUSD,
-                      chineseDescription: chineseDescription
-                  });
-              });
-
-              // 清空现有卡片
-              productListDiv.innerHTML = '';
-
-              // 创建产品卡片
-              Object.values(currentProducts).forEach(product => {
-                  const card = document.createElement('div');
-                  card.className = 'col';
-                  card.innerHTML = `
-                      <div class="card product-card shadow-sm">
-                          <img src="${product.imageSrc}" alt="Product Image" class="card-img-top" onerror="this.onerror=null;this.src='default-image.png';">
-                          <div class="card-body">
-                              <h5 class="card-title">${product.englishDescription}</h5>
-                              <p class="card-text">${product.chineseDescription}</p>
-                              <select class="form-select" onchange="updatePriceAndDescription(this, '${product.englishDescription}')">
-                                  <option value="">选择型号</option>
-                                  ${product.modelOptions.map(option => `
-                                      <option value="${option.model}">${option.model}</option>
-                                  `).join('')}
-                              </select>
-                              <p id="productPrice-${product.englishDescription}" class="card-text mt-3">
-                                  <strong>Price:</strong> ¥${product.priceRMB} / $${product.priceUSD}
-                              </p>
-                              <p id="productDescription-${product.englishDescription}" class="card-text">
-                                  ${product.chineseDescription}
-                              </p>
-                          </div>
-                      </div>
-                  `;
-                  productListDiv.appendChild(card);
-
-                  // 绑定 select 变化事件，确保更新价格和描述
-                  const modelSelect = card.querySelector('select');
-                  if (modelSelect) {
-                      modelSelect.addEventListener('change', (event) => {
-                          updatePriceAndDescription(event.target, product.englishDescription);
-                      });
-                  }
-              });
-          }
-
-          function updatePriceAndDescription(selectElement, englishDescription) {
-              const selectedModel = selectElement.value;
-              const product = currentProducts[englishDescription];
-              if (!product) return;
-              const selectedOption = product.modelOptions.find(option => option.model === selectedModel);
-
-              if (selectedOption) {
-                  const priceElement = document.getElementById(`productPrice-${englishDescription}`);
-                  const descriptionElement = document.getElementById(`productDescription-${englishDescription}`);
-
-                  priceElement.innerHTML = `<strong>Price:</strong> ¥${selectedOption.priceRMB} / $${selectedOption.priceUSD}`;
-                  descriptionElement.innerHTML = selectedOption.chineseDescription;
-              }
-          }
-      })
-      .catch(error => {
-          console.error('读取 Excel 文件时出错:', error);
-      });
-</script>
-
-</body>
-</html>
+          const productListDiv = document.getElementById('product
