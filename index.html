@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Guangzhou KAZHI Trading Co., Ltd. - Providing the latest electronic products">
   <title>Guangzhou KAZHI Trading Co., Ltd. Store</title>
-  <!-- 引入Bootstrap框架 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
@@ -21,7 +20,6 @@
       padding: 10px;
       text-align: center;
     }
-    /* 第一行：logo 与标题，居中 */
     .top-row {
       display: flex;
       align-items: center;
@@ -35,7 +33,6 @@
       font-size: 1.5rem;
       margin: 0 0 0 10px;
     }
-    /* 第二行：导航按钮，居中 */
     .nav-row {
       display: flex;
       justify-content: center;
@@ -45,6 +42,33 @@
     .nav-row .btn {
       margin-right: 10px;
     }
+    .product-card {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+    }
+    .product-card .card-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding-bottom: 0;
+    }
+    .product-card .table-responsive {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 250px;
+      margin-bottom: 10px;
+    }
+    .product-card .btn {
+      margin-top: auto;
+      width: fit-content;
+      align-self: center;
+    }
     .product-card img {
       width: 100%;
       height: 200px;
@@ -53,12 +77,6 @@
     }
     .product-card img:hover {
       transform: scale(1.1);
-    }
-    .product-card {
-      transition: transform 0.3s ease;
-    }
-    .product-card:hover {
-      transform: translateY(-5px);
     }
     footer {
       background-color: #343a40;
@@ -72,34 +90,28 @@
     }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-  <!-- 引入Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
 
 <header>
-  <!-- 第一行：Logo 与标题 -->
   <div class="top-row">
     <img src="company-logo.png" alt="Kazhi Icon">
     <h1>Welcome to Guangzhou KAZHI Trading Co., Ltd. Store</h1>
   </div>
-  <!-- 第二行：导航按钮 -->
   <div class="nav-row mt-2">
     <button id="contactBtn" class="btn btn-outline-light">Contact</button>
     <span id="sheetButtons"></span>
   </div>
 </header>
 
-<!-- 主内容区域：显示产品或联系方式 -->
 <main class="container my-4" id="mainContent">
-  <!-- 初始内容由点击按钮加载 -->
 </main>
 
 <footer>
   <p>© 2025 Guangzhou KAZHI Trading Co., Ltd. All Rights Reserved</p>
 </footer>
 
-<!-- 英文描述模态框 -->
 <div class="modal fade" id="englishDescModal" tabindex="-1" aria-labelledby="englishDescModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -107,26 +119,21 @@
         <h5 class="modal-title" id="englishDescModalLabel">Detailed English Description</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body" id="englishDescModalBody">
-        <!-- 英文描述内容 -->
-      </div>
+      <div class="modal-body" id="englishDescModalBody"></div>
     </div>
   </div>
 </div>
 
 <script>
-  let workbook; // 用于存储 Excel 工作簿数据
+  let workbook;
 
-  // 加载 Excel 文件
   fetch('test.xlsx')
     .then(response => response.arrayBuffer())
     .then(data => {
       workbook = XLSX.read(data, { type: 'array' });
       const sheetNames = workbook.SheetNames;
-
-      // 动态生成 sheet 按钮
       const sheetButtonsSpan = document.getElementById('sheetButtons');
-      sheetButtonsSpan.innerHTML = ''; // 清空按钮区域
+      sheetButtonsSpan.innerHTML = '';
       sheetNames.forEach(sheetName => {
         const btn = document.createElement('button');
         btn.className = 'btn btn-outline-light';
@@ -134,8 +141,6 @@
         btn.onclick = () => loadProducts(sheetName);
         sheetButtonsSpan.appendChild(btn);
       });
-
-      // 默认加载第一个 sheet 的产品信息（如果存在）
       if (sheetNames.length > 0) {
         loadProducts(sheetNames[0]);
       }
@@ -144,20 +149,17 @@
       console.error('Error reading Excel file:', error);
     });
 
-  // Contact 按钮事件：显示联系方式
   document.getElementById('contactBtn').addEventListener('click', showContact);
 
-  // 显示产品信息（根据指定 sheet）
   function loadProducts(sheetName) {
     const sheet = workbook.Sheets[sheetName];
     const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
     const products = {};
 
-    // 根据英文描述对产品分组（同一产品不同型号）
     rows.slice(1).forEach(row => {
       const imageCode = row[0];
       const model = row[1] || '';
-      const description = row[3] || ''; // 产品描述
+      const description = row[3] || '';
       const wholesalePriceRMB = row[4] || '';
       const wholesalePriceUSD = row[5] || '';
       const englishDescription = row[6] || '';
@@ -180,10 +182,8 @@
       });
     });
 
-    // 构建产品卡片（每个卡片显示产品图片、描述、型号价格对比表格及“View Details”按钮）
     const mainContent = document.getElementById('mainContent');
-    mainContent.innerHTML = ''; // 清空主内容区域
-
+    mainContent.innerHTML = '';
     const rowDiv = document.createElement('div');
     rowDiv.className = 'row row-cols-1 row-cols-md-3 g-4';
 
@@ -192,18 +192,13 @@
       colDiv.className = 'col';
       colDiv.innerHTML = `
         <div class="card product-card shadow-sm">
-          <img src="${product.imageSrc}" alt="Product Image" class="card-img-top" onerror="this.onerror=null;this.src='default-image.png';">
+          <img src="${product.imageSrc}" class="card-img-top" onerror="this.onerror=null;this.src='default-image.png';">
           <div class="card-body">
             <p class="card-text">${product.description}</p>
             <div class="table-responsive">
               <table class="table table-bordered">
                 <thead>
-                  <tr>
-                    <th>Model</th>
-                    <th>Price (¥)</th>
-                    <th>Price ($)</th>
-                    <th>Description</th>
-                  </tr>
+                  <tr><th>Model</th><th>Price (¥)</th><th>Price ($)</th><th>Description</th></tr>
                 </thead>
                 <tbody>
                   ${product.modelOptions.map(option => `
@@ -227,7 +222,6 @@
     mainContent.appendChild(rowDiv);
   }
 
-  // 显示联系方式
   function showContact() {
     const mainContent = document.getElementById('mainContent');
     mainContent.innerHTML = `
@@ -246,13 +240,10 @@
     `;
   }
 
-  // 弹出模态框显示详细的英语描述
   function showEnglishDescription(desc) {
     document.getElementById('englishDescModalBody').innerHTML = desc;
-    var englishDescModal = new bootstrap.Modal(document.getElementById('englishDescModal'));
-    englishDescModal.show();
+    new bootstrap.Modal(document.getElementById('englishDescModal')).show();
   }
 </script>
-
 </body>
 </html>
