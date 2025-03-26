@@ -191,8 +191,8 @@
               '<div class="card-body">' +
                 '<h5 class="card-title">' + product.englishDescription + '</h5>' +
                 '<p class="card-text">' + product.chineseDescription + '</p>' +
-                // 使用单引号方式传递字符串参数，同时处理引号问题
-                '<select class="form-select" onchange="updatePriceAndDescription(this, \'' + product.englishDescription.replace(/'/g, "\\'") + '\')">' +
+                // 使用 JSON.stringify 确保传递参数正确
+                '<select class="form-select" onchange="updatePriceAndDescription(this, ' + JSON.stringify(product.englishDescription) + ')">' +
                   '<option value="">选择型号</option>' +
                   product.modelOptions.map(function(option) {
                     return '<option value="' + option.model + '">' + option.model + '</option>';
